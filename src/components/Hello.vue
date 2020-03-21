@@ -1,21 +1,30 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="http://chat.vuejs.org/" target="_blank" rel="noopener">Vue Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="http://vuejs-templates.github.io/webpack/" target="_blank" rel="noopener">Docs for This Template</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <h2>Hati</h2>
+  <div>
+
+    <div class="m-0">Value: {{ text }}</div>
+  </div>
+  <div>
+    <b-row align-h="center">
+   <b-card no-body class="overflow-hidden" style="max-width: 540px;margin:0;display:flex;">
+    <b-row align-h="center">
+      <b-col md="6">
+        <b-card-img src="https://picsum.photos/400/400/?image=20" class="rounded-0"></b-card-img>
+      </b-col>
+      <b-col md="6">
+        <b-card-body title="Horizontal Card">
+          <b-card-text>
+            <b-input v-model="text" placeholder="Name"></b-input>
+          <b-input v-model="text" placeholder="Password"></b-input>
+          </b-card-text>
+        </b-card-body>
+      </b-col>
+    </b-row>
+  </b-card>
+  </b-row>
+</div>
   </div>
 </template>
 
@@ -24,7 +33,7 @@ export default {
   name: 'hello',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js PWA'
+      text: ''
     }
   }
 }
@@ -49,4 +58,8 @@ li {
 a {
   color: #35495E;
 }
+b-card{
+  margin-left:10vh;
+}
+
 </style>
