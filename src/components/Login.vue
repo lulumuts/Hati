@@ -4,7 +4,7 @@
     <p v-if="$route.query.redirect">
       You need to login first.
     </p>
-    <form @submit.prevent="login">
+    <form @submit.prevent="login" autocomplete="off">
       <label><input v-model="email" placeholder="email"></label>
       <label><input v-model="pass" placeholder="password" type="password"></label> (hint: password1)<br>
       <button type="submit">login</button>
@@ -18,7 +18,7 @@ import auth from '../auth'
 export default {
   data () {
     return {
-      email: 'joe@example.com',
+      email: '',
       pass: '',
       error: false
     }

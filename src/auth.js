@@ -1,5 +1,5 @@
 const OktaAuth = require('@okta/okta-auth-js')
-const authClient = new OktaAuth({url: 'https://{dev-779517.okta.com}/oauth2/', issuer: 'default'})
+const authClient = new OktaAuth({url: 'https://dev-779517.okta.com', issuer: 'default'})
 
 export default {
   login (email, pass, cb) {
@@ -14,9 +14,18 @@ export default {
       password: pass
     }).then(response => {
       if (response.status === 'SUCCESS') {
-        localStorage.token = response.token
-        if (cb) cb(true)
-        this.onChange(true)
+        return authClient.token.getWithoutPrompt({
+          clientId: '0oa4o7ak3f5XqY2UK4x6',
+          responseType: ['id_token', 'token'],
+          scopes: ['openid', 'email', 'profile'],
+          sessionToken: response.sessionToken,
+          redirectUri: window.location.origin
+        }).then(tokens => {
+          localStorage.token = tokens[1].accessToken
+          localStorage.idToken = tokens[0].idToken
+          if (cb) cb(true)
+          this.onChange(true)
+        })
       }
     }).fail(err => {
       console.error(err.message)
@@ -28,9 +37,20 @@ export default {
   getToken () {
     return localStorage.token
   },
+  getName () {
+    const claims = this.parseJwt(localStorage.idToken)
+    console.jwt(localStorage.idToken)
+    return claims['name']
+  },
 
+  parseJwt (token) {
+    const base64Url = token.split('.')[1]
+    const base64 = base64Url.replace('-', '+').replace('_', '/')
+    return JSON.parse(window.atob(base64))
+  },
   logout (cb) {
     delete localStorage.token
+    delete localStorage.idToken
     if (cb) cb()
     this.onChange(false)
     return authClient.signOut()
