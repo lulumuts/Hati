@@ -1,6 +1,27 @@
 <template>
   <div id="app">
-    <h1>Auth Flow</h1>
+      <b-navbar class="background" toggleable="lg">
+    <b-navbar-brand href="#"><h1>HATI</h1></b-navbar-brand>
+
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">
+    
+        <b-navbar-nav right>
+          <!-- Using 'button-content' slot -->
+           <router-link v-if="loggedIn" to="/logout">
+          <b-nav-item href="#">Logout</b-nav-item>
+          </router-link>
+          <router-link v-if="!loggedIn" to="/login">
+          <b-nav-item href="#">Login</b-nav-item>
+          </router-link>
+        </b-navbar-nav>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+  <!----
     <ul>
       <li>
         <router-link v-if="loggedIn" to="/logout">Log out</router-link>
@@ -13,7 +34,7 @@
         <router-link to="/dashboard">Dashboard</router-link>
         (authenticated)
       </li>
-    </ul>
+    </ul>----->
     <template v-if="$route.matched.length">
       <router-view></router-view>
     </template>
@@ -35,28 +56,26 @@ export default {
     auth.onChange = loggedIn => {
       this.loggedIn = loggedIn
     }
+    this.isAuthenticated()
+  },
+  methods: {
+    async isAuthenticated () {
+      this.authenticated = await this.$auth.isAuthenticated()
+    }
   }
 }
 </script>
 
 <style>
-  html, body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    color: #2c3e50;
-  }
+@import url('https://fonts.googleapis.com/css?family=Oswald&display=swap');
 
-  #app {
-    padding: 0 20px;
+  .background{
+    background-color:#FEFEFE;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    
   }
-
-  ul {
-    line-height: 1.5em;
-    padding-left: 1.5em;
-  }
-
-  a {
-    color: #7f8c8d;
-    text-decoration: none;
+  .background, h2{
+    font-family: 'Oswald', sans-serif;
   }
 
   a:hover {
