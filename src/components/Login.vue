@@ -1,5 +1,5 @@
 <template>
-  <div id="wave">
+  <div class="two">
     <b-form @submit.prevent="login" autocomplete="off">
           <b-row align-h="center" align-v="center">
             <b-card
@@ -16,7 +16,7 @@
               You need to login first.
             </p>
             <b-input v-model="email" placeholder="Email" style="margin:14px 0 14px 0;"></b-input>
-          <b-input v-model="pass" placeholder="Password" style="margin:14px 0 14px 0;"></b-input>
+          <b-input v-model="pass" placeholder="Password" type="password" style="margin:14px 0 14px 0;"></b-input>
           <b-button class="submit" type="submit">LOGIN</b-button>
            <p v-if="error" class="error">Bad login information</p>
           </b-card-text>
@@ -59,6 +59,14 @@ img{
   margin:auto;
   display:flex;
 }
+body{
+  /* background-color: #34ADFF; */
+  background-image: -webkit-linear-gradient(150deg, #D2DCD1 50%, #EFEFEF 50%);
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height:100vh;
+
+}
 .text{
   margin-top:100px;
 }
@@ -69,7 +77,6 @@ img{
   height:35em;
   padding:10px;
   margin:7vw;
-
 }
 
  .submit{

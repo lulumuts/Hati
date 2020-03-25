@@ -7,7 +7,7 @@ import Dashboard from '@/components/Dashboard.vue'
 import AddTutorial from '@/components/AddTutorial.vue'
 import Login from '@/components/Login.vue'
 import List from '@/components/List.vue'
-import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormTextareaPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, AlertPlugin, NavbarPlugin } from 'bootstrap-vue'
+import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormTextareaPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, AlertPlugin, NavbarPlugin, FormFilePlugin } from 'bootstrap-vue'
 
 Vue.use(Router)
 Vue.use(CardPlugin)
@@ -19,6 +19,7 @@ Vue.use(FormTextareaPlugin)
 Vue.use(FormGroupPlugin)
 Vue.use(TablePlugin)
 Vue.use(ButtonPlugin)
+Vue.use(FormFilePlugin)
 Vue.use(AlertPlugin)
 Vue.use(Auth, {
   issuer: 'https://dev-779517/oauth2/default',

@@ -1,124 +1,127 @@
 <template>
-  <div v-if="currentTutorial" class="edit-form">
+  <div class="edit-form">
     <h4>Tutorial</h4>
-    <form>
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" class="form-control" id="title"
-          v-model="currentTutorial.title"
-        />
-      </div>
-      <div class="form-group">
-        <label for="description">Description</label>
-        <input type="text" class="form-control" id="description"
-          v-model="currentTutorial.description"
-        />
-      </div>
-
-      <div class="form-group">
-        <label><strong>Status:</strong></label>
-        {{ currentTutorial.published ? "Published" : "Pending" }}
-      </div>
-    </form>
-
-    <button class="badge badge-primary mr-2"
-      v-if="currentTutorial.published"
-      @click="updatePublished(false)"
-    >
-      UnPublish
-    </button>
-    <button v-else class="badge badge-primary mr-2"
-      @click="updatePublished(true)"
-    >
-      Publish
-    </button>
-
-    <button class="badge badge-danger mr-2"
-      @click="deleteTutorial"
-    >
-      Delete
-    </button>
-
-    <button type="submit" class="badge badge-success"
-      @click="updateTutorial"
-    >
-      Update
-    </button>
-    <p>{{ message }}</p>
-  </div>
-
-  <div v-else>
+  <div>
     <br />
-    <p>Please click on a Tutorial...</p>
+    <br>
+     <div class="container">
+    <div style="margin-left:-50px;">
+      <label>File
+        <b-form-file multiple type="file" ref="file" name="file" @change="onFileChange" accept="/"></b-form-file>
+        
+      </label>
+        <b-button v-on:click="this.submitFile">Submit</b-button>
+    </div>
+  </div>
+    
+  <embed width="400" height="600" :src="previewUrl" v-if="previewUrl" style="margin-left:-50px;">
+    <h2 style="text-align:center">All</h2>
+    <ul>
+      <li v-for="document in documents">
+        <embed width="400" height="600" :src="previewUrl" v-if="previewUrl" style="margin-left:-50px;">
+        <p>{{document.fileName}}</p>
+        <b-button @click="download">Download</b-button>
+      </li>
+    </ul>
+  </div>
   </div>
 </template>
 
 <script>
-import TutorialDataService from '../services/DataService'
+import axios from 'axios'
 
 export default {
   name: 'dashboard',
   data () {
     return {
-      currentTutorial: null,
-      message: ''
+      documents: [],
+      images: [],
+      name: '',
+      doc: '',
+      attachment: {
+        name: null,
+        file: null
+      },
+      previewUrl: '',
+      docUrl: ''
     }
   },
   methods: {
-    getTutorial (id) {
-      TutorialDataService.get(id)
-        .then(response => {
-          this.currentTutorial = response.data
-          console.log(response.data)
-        })
-        .catch(e => {
-          console.log(e)
-        })
+    onFileChange (event) {
+      this.attachment.file = event.target.files[0]
+      this.attachment.name = event.target.files[0].name
+      console.log(this.attachment.file.name)
     },
+    createImage (file) {
+      var reader = new FileReader()
+      var vm = this
 
-    updatePublished (status) {
-      var data = {
-        id: this.currentTutorial.id,
-        title: this.currentTutorial.title,
-        description: this.currentTutorial.description,
-        published: status
+      reader.onload = (e) => {
+        vm.image = file.toString('base64')
+        console.log('is it this', vm.image)
       }
-
-      TutorialDataService.update(this.currentTutorial.id, data)
-        .then(response => {
-          this.currentTutorial.published = status
-          console.log(response.data)
-        })
-        .catch(e => {
-          console.log(e)
-        })
+      reader.readAsDataURL(file)
     },
-
-    updateTutorial () {
-      TutorialDataService.update(this.currentTutorial.id, this.currentTutorial)
-        .then(response => {
-          console.log(response.data)
-          this.message = 'The tutorial was updated successfully!'
-        })
-        .catch(e => {
-          console.log(e)
-        })
+    download () {
+      axios({
+        url: 'http://35.222.99.37/read/?category=foo&sub_category=bar',
+        method: 'GET',
+        responseType: 'blob'// important
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'file.pdf') // or any other extension
+        document.body.appendChild(link)
+        link.click()
+      })
     },
-
-    deleteTutorial () {
-      TutorialDataService.delete(this.currentTutorial.id)
-        .then(response => {
-          console.log(response.data)
-          this.$router.push({ name: 'tutorials' })
+    handleSelects (e) {
+      let fileList = Array.prototype.slice.call(e.target.files)
+      fileList.forEach(f => {
+        if (!f.type.match('image.*')) {
+          return
+        }
+        let reader = new FileReader()
+        let that = this
+        reader.onload = function (e) {
+          that.images.push(e.target.result)
+        }
+        reader.readAsDataURL(f)
+      })
+    },
+    submitFile () {
+      let formData = new FormData()
+      formData.append('document', this.attachment.file)
+      axios({ method: 'post',
+        url: 'http://35.222.99.37/upload/?category=foo&sub_category=bar',
+        data: formData
+      }).then(result => {
+        const reader = new FileReader()
+        const that = this
+        reader.onload = function (e) {
+          that.previewUrl = e.target.result
+        }
+        reader.readAsDataURL(this.attachment.file)
+        console.log(result.data)
+      })
+        .then(function (result) {
+          console.log(result)
         })
-        .catch(e => {
-          console.log(e)
+        .catch(function (error) {
+          console.log(error)
         })
     }
   },
   mounted () {
-    this.message = ''
-    this.getTutorial(this.$route.params.id)
+    axios
+      .get('http://35.222.99.37/documents')
+      .then(response => {
+        this.documents = response.data.documents
+        console.log(this.documents)
+      }).catch(error => {
+        console.log(error)
+      })
   }
 }
 </script>
@@ -128,95 +131,28 @@ export default {
   max-width: 300px;
   margin: auto;
 }
-</style>
-<!-----------<template>
-  <div class="container-fluid mt-4">
-    <h1 class="h1">Posts Manager</h1>
-    <b-alert :show="loading" variant="info">Loading...</b-alert>
-    <b-row>
-      <b-col>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Updated At</th>
-              <th>&nbsp;</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="post in posts" :key="post.id">
-              <td>{{ post.id }}</td>
-              <td>{{ post.title }}</td>
-              <td>{{ post.updatedAt }}</td>
-              <td class="text-right">
-                <a href="#" @click.prevent="populatePostToEdit(post)">Edit</a> -
-                <a href="#" @click.prevent="deletePost(post.id)">Delete</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </b-col>
-      <b-col lg="3">
-        <b-card :title="(model.id ? 'Edit Post ID#' + model.id : 'New Post')">
-          <form @submit.prevent="savePost">
-            <b-form-group label="Title">
-              <b-form-input type="text" v-model="model.title"></b-form-input>
-            </b-form-group>
-            <b-form-group label="Body">
-              <b-form-textarea rows="4" v-model="model.body"></b-form-textarea>
-            </b-form-group>
-            <div>
-              <b-btn type="submit" variant="success">Save Post</b-btn>
-            </div>
-          </form>
-        </b-card>
-      </b-col>
-    </b-row>
-  </div>
-</template>
-
-<script>
-import api from '@/api'
-export default {
-  data () {
-    return {
-      loading: false,
-      posts: [],
-      model: {}
-    }
-  },
-  async created () {
-    this.refreshPosts()
-  },
-  methods: {
-    async refreshPosts () {
-      this.loading = true
-      this.posts = await api.getPosts()
-      this.loading = false
-    },
-    async populatePostToEdit (post) {
-      this.model = Object.assign({}, post)
-    },
-    async savePost () {
-      if (this.model.id) {
-        await api.updatePost(this.model.id, this.model)
-      } else {
-        await api.createPost(this.model)
-      }
-      this.model = {} 
-      await this.refreshPosts()
-    },
-    async deletePost (id) {
-      if (confirm('Are you sure you want to delete this post?')) {
-      
-        if (this.model.id === id) {
-          this.model = {}
-        }
-        await api.deletePost(id)
-        await this.refreshPosts()
-      }
-    }
-  }
+output embed {
+  max-width: 1000px;
+  height:600px;
 }
-</script>----->
+output p {
+  background: #f7f7f7;
+  border-radius: 4px;
+  padding: 2rem;
+  text-align: center;
+}
+</style>
+<!-------
+axios({
+  url: 'http://api.dev/file-download',
+  method: 'GET',
+  responseType: 'blob', // important
+}).then((response) => {
+   const url = window.URL.createObjectURL(new Blob([response.data]));
+   const link = document.createElement('a');
+   link.href = url;
+   link.setAttribute('download', 'file.pdf'); //or any other extension
+   document.body.appendChild(link);
+   link.click();
+});
+-------->
