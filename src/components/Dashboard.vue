@@ -10,7 +10,9 @@
         <b-form-file multiple type="file" ref="file" name="file" @change="onFileChange" accept="/"></b-form-file>
         
       </label>
+      <a>
         <b-button v-on:click="this.submitFile">Submit</b-button>
+        </a>
     </div>
   </div>
     
@@ -18,9 +20,11 @@
     <h2 style="text-align:center">All</h2>
     <ul>
       <li v-for="document in documents">
-        <embed width="400" height="600" :src="previewUrl" v-if="previewUrl" style="margin-left:-50px;">
+        <embed width="400" height="600" :src="Url" v-if="Url" style="margin-left:-50px;">
         <p>{{document.fileName}}</p>
-        <b-button @click="download">Download</b-button>
+        <a id="download" :href="'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + document.fileName + '&fileextn=' + document.fileExt" download>
+        <b-button v-on:click="select()">Download</b-button>
+        </a>
       </li>
     </ul>
   </div>
@@ -35,7 +39,8 @@ export default {
   data () {
     return {
       documents: [],
-      images: [],
+      promises: [],
+      downloads: [],
       name: '',
       doc: '',
       attachment: {
@@ -43,10 +48,17 @@ export default {
         file: null
       },
       previewUrl: '',
-      docUrl: ''
+      Url: '',
+      filename: '',
+      fileextn: ''
+
     }
   },
   methods: {
+    select: function (event) {
+      let u = document.getElementById('download').href
+      document.body.appendChild(u)
+    },
     onFileChange (event) {
       this.attachment.file = event.target.files[0]
       this.attachment.name = event.target.files[0].name
@@ -61,34 +73,6 @@ export default {
         console.log('is it this', vm.image)
       }
       reader.readAsDataURL(file)
-    },
-    download () {
-      axios({
-        url: 'http://35.222.99.37/read/?category=foo&sub_category=bar',
-        method: 'GET',
-        responseType: 'blob'// important
-      }).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]))
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', 'file.pdf') // or any other extension
-        document.body.appendChild(link)
-        link.click()
-      })
-    },
-    handleSelects (e) {
-      let fileList = Array.prototype.slice.call(e.target.files)
-      fileList.forEach(f => {
-        if (!f.type.match('image.*')) {
-          return
-        }
-        let reader = new FileReader()
-        let that = this
-        reader.onload = function (e) {
-          that.images.push(e.target.result)
-        }
-        reader.readAsDataURL(f)
-      })
     },
     submitFile () {
       let formData = new FormData()
@@ -114,10 +98,13 @@ export default {
     }
   },
   mounted () {
-    axios
-      .get('http://35.222.99.37/documents')
+    axios.get('http://35.222.99.37/documents')
       .then(response => {
         this.documents = response.data.documents
+        this.documents.forEach((item) => {
+          console.log('found:', item.fileName)
+          console.log('extn:', item.fileExt)
+        })
         console.log(this.documents)
       }).catch(error => {
         console.log(error)
@@ -143,6 +130,35 @@ output p {
 }
 </style>
 <!-------
+    axios.get('http://35.222.99.37/documents')
+      .then(response => {
+        this.documents = response.data.documents
+        this.documents.forEach((item) => {
+          console.log('found:', item.fileName)
+          console.log('extn:', item.fileExt)
+          this.promises.push('http://35.222.99.37/read/?category=foo&sub_category=bar' + item.fileName + item.fileExt)
+            .then(resp => {
+              this.downloads.push(resp)
+              console.log('this.downloads', this.downloads)
+            })
+        })
+        console.log(this.documents)
+      }).catch(error => {
+        console.log(error)
+      })
+
+axios({
+  url: 'http://api.dev/file-download',
+  method: 'GET',
+  responseType: 'blob', // important
+}).then((response) => {
+   const url = window.URL.createObjectURL(new Blob([response.data]));
+   const link = document.createElement('a');
+   link.href = url;
+   link.setAttribute('download', 'file.pdf'); //or any other extension
+   document.body.appendChild(link);
+   link.click();
+})
 axios({
   url: 'http://api.dev/file-download',
   method: 'GET',
@@ -155,4 +171,17 @@ axios({
    document.body.appendChild(link);
    link.click();
 });
+
+axios({
+  url: 'http://35.222.99.37/read/?category=foo&sub_category=bar',
+  method: 'GET',
+  responseType: 'blob'
+}).then((item) => {
+  const url = window.URL.createObjectURL(item)
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute(item.fileName, item.fileExt)
+  document.body.appendChild(link)
+  link.click()
+})
 -------->
