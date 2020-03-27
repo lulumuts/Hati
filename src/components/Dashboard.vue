@@ -18,12 +18,13 @@
     
   <embed width="400" height="600" :src="previewUrl" v-if="previewUrl" style="margin-left:-50px;">
     <h2 style="text-align:center">All</h2>
-    <ul>
-      <li v-for="document in documents">
-        <embed width="400" height="600" :src="Url" v-if="Url" style="margin-left:-50px;">
+    <ul id="documents">
+      <li v-for="(document, i) in documents" v-on:click="select($event, document)">
+        <embed width="400" height="600" style="margin-left:-50px;">
         <p>{{document.fileName}}</p>
-        <a id="download" :href="'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + document.fileName + '&fileextn=' + document.fileExt" download>
-        <b-button v-on:click="select()">Download</b-button>
+        <p>{{document.fileExt}}</p>
+        <a >
+        <b-button id="download" @change="onFileChange" :ref="'document' + i"><p>{{document.fileExt}}</p></b-button>
         </a>
       </li>
     </ul>
@@ -41,23 +42,32 @@ export default {
       documents: [],
       promises: [],
       downloads: [],
-      name: '',
-      doc: '',
+      name: null,
+      doc: null,
       attachment: {
         name: null,
         file: null
       },
-      previewUrl: '',
-      Url: '',
-      filename: '',
-      fileextn: ''
-
+      previewUrl: ''
     }
   },
   methods: {
-    select: function (event) {
-      let u = document.getElementById('download').href
-      document.body.appendChild(u)
+    select: function (ev, i) {
+      let filename = i.fileName
+      let fileext = i.fileExt
+      console.log(filename, fileext)
+      axios({
+        url: 'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + i.fileName + '&fileextn=' + i.fileExt,
+        method: 'GET',
+        responseType: 'blob'
+      }).then((response) => {
+        var fileURL = window.URL.createObjectURL(new Blob([response.data]))
+        var fileLink = document.createElement('a')
+        fileLink.href = fileURL
+        fileLink.setAttribute('download', 'file.pdf')
+        document.body.appendChild(fileLink)
+        fileLink.click()
+      })
     },
     onFileChange (event) {
       this.attachment.file = event.target.files[0]
