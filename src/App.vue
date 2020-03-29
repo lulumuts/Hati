@@ -53,7 +53,8 @@ export default {
     text-decoration: none;
   }
   img{
-    width:50%;
+    width:40%;
+    padding: 12px;
   }
   a:hover {
     color: #4fc08d;
