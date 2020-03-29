@@ -19,12 +19,15 @@
   <embed width="400" height="600" :src="previewUrl" v-if="previewUrl" style="margin-left:-50px;">
     <h2 style="text-align:center">All</h2>
     <ul id="documents">
-      <li v-for="(document, i) in documents" v-on:click="select($event, document)">
-        <embed width="400" height="600" style="margin-left:-50px;">
+      <li v-for="(document, i) in documents">
         <p>{{document.fileName}}</p>
         <p>{{document.fileExt}}</p>
+        <embed width="400" height="600" :src="Url" v-if="Url" :ref="downloads"  style="margin-left:-50px;">
         <a >
-        <b-button id="download" @change="onFileChange" :ref="'document' + i"><p>{{document.fileExt}}</p></b-button>
+        <b-button id="download" v-on:click="select($event, document)" @change="onFileChange" :ref="document"><p>DOWNLOAD</p></b-button>
+        </a>
+        <a>
+        <b-button v-on:click="deleteFile($event, document)"><p>DELETE</p></b-button>
         </a>
       </li>
     </ul>
@@ -40,31 +43,41 @@ export default {
   data () {
     return {
       documents: [],
-      promises: [],
-      downloads: [],
-      name: null,
-      doc: null,
+      src: null,
       attachment: {
         name: null,
         file: null
       },
-      previewUrl: ''
+      previewUrl: '',
+      Url: '',
+      downloads: 'downloads'
     }
   },
+  props: ['file', 'ext'],
   methods: {
+    deleteFile: function (ev, i) {
+      let filename = i.fileName
+      let fileext = i.fileExt
+      console.log(filename, fileext)
+      axios({
+        url: 'http://35.222.99.37/delete/?category=foo&sub_category=bar&filename=' + filename + '&fileextn=' + fileext,
+        method: 'GET',
+        responseType: 'blob'
+      }).then(window.location.reload())
+    },
     select: function (ev, i) {
       let filename = i.fileName
       let fileext = i.fileExt
       console.log(filename, fileext)
       axios({
-        url: 'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + i.fileName + '&fileextn=' + i.fileExt,
+        url: 'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + filename + '&fileextn=' + fileext,
         method: 'GET',
         responseType: 'blob'
       }).then((response) => {
         var fileURL = window.URL.createObjectURL(new Blob([response.data]))
         var fileLink = document.createElement('a')
         fileLink.href = fileURL
-        fileLink.setAttribute('download', 'file.pdf')
+        fileLink.setAttribute('download', 'MoH.pdf')
         document.body.appendChild(fileLink)
         fileLink.click()
       })
@@ -114,8 +127,26 @@ export default {
         this.documents.forEach((item) => {
           console.log('found:', item.fileName)
           console.log('extn:', item.fileExt)
+          return axios({
+            url: 'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + item.fileName + '&fileextn=' + item.fileExt,
+            method: 'GET',
+            responseType: 'blob'
+          }).then((response) => {
+            console.log('response', response)
+            let blob = response.data
+            console.log('blob', blob)
+            const file = new File([blob], 'FILENAME', {type: 'application/pdf'})
+            console.log('FILE', file)
+            const reader = new FileReader()
+            const that = this
+            reader.onload = function (e) {
+              that.Url = e.target.result
+              console.log('e.target', that.$refs.downloads)
+              // console.log('that.URL', response)
+            }
+            reader.readAsDataURL(file)
+          })
         })
-        console.log(this.documents)
       }).catch(error => {
         console.log(error)
       })
@@ -140,6 +171,38 @@ output p {
 }
 </style>
 <!-------
+
+
+    axios.get('http://35.222.99.37/documents')
+      .then(response => {
+        this.documents = response.data.documents
+        this.documents.forEach((item) => {
+          console.log('found:', item.fileName)
+          console.log('extn:', item.fileExt)
+          return axios({
+            url: 'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + item.fileName + '&fileextn=' + item.fileExt,
+            method: 'GET',
+            responseType: 'blob'
+          }).then((response) => {
+            console.log('response', response)
+            let blob = response.data
+            console.log('blob', blob)
+            const file = new File([blob], 'FILENAME', {type: 'application/pdf'})
+            console.log('FILE', file)
+            const reader = new FileReader()
+            const that = this
+            reader.onload = function () {
+              // that.Url = that.$refs.target.result
+              console.log('e.target', that.$refs)
+              console.log('that.URL', response)
+            }
+            reader.readAsDataURL(file)
+          })
+        })
+      }).catch(error => {
+        console.log(error)
+      })
+
     axios.get('http://35.222.99.37/documents')
       .then(response => {
         this.documents = response.data.documents

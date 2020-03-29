@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import auth from '@/auth'
 import Auth from '@okta/okta-vue'
+import AsyncComputed from 'vue-async-computed'
 import Dashboard from '@/components/Dashboard.vue'
 import AddTutorial from '@/components/AddTutorial.vue'
 import Login from '@/components/Login.vue'
@@ -20,6 +21,7 @@ Vue.use(FormGroupPlugin)
 Vue.use(TablePlugin)
 Vue.use(ButtonPlugin)
 Vue.use(FormFilePlugin)
+Vue.use(AsyncComputed)
 Vue.use(AlertPlugin)
 Vue.use(Auth, {
   issuer: 'https://dev-779517/oauth2/default',

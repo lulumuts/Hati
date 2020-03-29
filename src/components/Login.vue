@@ -9,7 +9,8 @@
               style="max-width: 30rem;"
               class="mb-2 b-card"
             > 
-            <img src="@/assets/1200px-Coat_of_arms_of_Kenya_(Official).svg.png">
+            <img src="@/assets/Hati-Logo.png">
+            <p>Ministry of Health<br>Document Reader</p>
           <b-card-text class="text">
             <h2>Login</h2>
             <p v-if="$route.query.redirect">
@@ -50,39 +51,39 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css?family=Slabo+27px&display=swap');
 .error {
   color: red;
 }
 img{
-  width:40%;
+  width:35%;
   margin:auto;
   display:flex;
 }
-body{
-  /* background-color: #34ADFF; */
-  background-image: -webkit-linear-gradient(150deg, #D2DCD1 50%, #EFEFEF 50%);
-  background-size: cover;
-  background-repeat: no-repeat;
-  min-height:100vh;
-
+p{
+  text-align: center;
+  padding:2%;
+  font-family: 'Slabo 27px', serif;
 }
 .text{
-  margin-top:100px;
+  margin-top:60px;
 }
 .b-card{
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  border-color: #006810;
+  border-color: #0DDBA9;
   border-width: 2px;
-  height:35em;
-  padding:10px;
+  border-radius: 10px;
+  height:38em;
+  padding:20px;
   margin:7vw;
+  width: 50vh;
 }
 
  .submit{
    float:right;
    height:50px;
    width:120px;
-   background-color:#006810; 
+   background-color:#0DDBA9; 
+   border: 0px;
  }
 </style>
