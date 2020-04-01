@@ -68,7 +68,7 @@ export default {
   display:flex;
   z-index: -1;
   position: relative;
-  margin-top: 7vh;
+  margin-top: 8vh;
 }
 input{
   border-radius: 20px;
@@ -112,7 +112,7 @@ a:hover{
   height:40.27em;
   padding:20px;
   width: 482px;
-  margin-top:-64vh;
+  margin-top:-65vh;
 }
  .submit{
    float:right;

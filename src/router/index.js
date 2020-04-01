@@ -3,15 +3,16 @@ import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import auth from '@/auth'
 import Auth from '@okta/okta-vue'
-import AsyncComputed from 'vue-async-computed'
 import Dashboard from '@/components/Dashboard.vue'
 import AddTutorial from '@/components/AddTutorial.vue'
 import Login from '@/components/Login.vue'
 import List from '@/components/List.vue'
-import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormTextareaPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, AlertPlugin, NavbarPlugin, FormFilePlugin } from 'bootstrap-vue'
+import DrawerLayout from 'vue-drawer-layout'
+import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormTextareaPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, AlertPlugin, NavbarPlugin, FormFilePlugin, EmbedPlugin, CollapsePlugin } from 'bootstrap-vue'
 
 Vue.use(Router)
 Vue.use(CardPlugin)
+Vue.use(DrawerLayout)
 Vue.use(NavbarPlugin)
 Vue.use(LayoutPlugin)
 Vue.use(FormPlugin)
@@ -19,9 +20,10 @@ Vue.use(FormInputPlugin)
 Vue.use(FormTextareaPlugin)
 Vue.use(FormGroupPlugin)
 Vue.use(TablePlugin)
+Vue.use(CollapsePlugin)
+Vue.use(EmbedPlugin)
 Vue.use(ButtonPlugin)
 Vue.use(FormFilePlugin)
-Vue.use(AsyncComputed)
 Vue.use(AlertPlugin)
 Vue.use(Auth, {
   issuer: 'https://dev-779517/oauth2/default',
