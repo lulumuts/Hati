@@ -10,41 +10,63 @@
             <img class="logo" src="@/assets/Hati-Logo.png">
             <p>Ministry of  Health<br>Document Reader</p>
           <b-card-text class="text">
-            <form v-on:submit.prevent="saveToDo">
-            <b-input class="input" v-model="user.name" placeholder="Full Name"></b-input>
+       
+            <b-input class="input" v-model="user.firstName" placeholder="First Name"></b-input>
+            <b-input class="input" v-model="user.lastName" placeholder="Last Name"></b-input>
             <b-input class="input" v-model="user.email" placeholder="Email"></b-input>
-            <b-input class="input" v-model="user.phone" placeholder="Phone Number"></b-input>
-          <b-button class="submit" type="submit">SIGNUP</b-button><br>
-           </form>
+            <b-input class="input" v-model="user.password" placeholder="Password"></b-input>
+            <b-input class="input" v-model="user.phoneNumber" placeholder="Phone Number"></b-input>
+            <b-input class="input" v-model="user.registrationID" placeholder="Registration ID"></b-input>
+            <b-input class="input" v-model="user.facilityName" placeholder="Facility Name"></b-input>
+         <b-input class="input" v-model="user.facilityAddress" placeholder="Facility Address"></b-input>
+          <b-button class="submit" type="submit" v-on:click="submit()">SIGNUP</b-button><br>
+     <br><br><br><br>
+            <b-input class="input" v-model="userCode" placeholder="Your code"></b-input>
+          <b-button class="submit" type="submit"  v-on:click="verify()">VERIFY</b-button><br>
+      <br><br>
           </b-card-text>
-          <a href="">Already have an account? Login</a>
+          <!-- <a href="">Already have an account? Login</a> -->
           </b-card>
-          <ul>
-        <li v-for="user in users">{{ user.name + ' '+ user.email + ' ' + user.phone }}</li>
-      </ul>
+         
     </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 const STORAGE_KEY = 'user-storage'
 export default {
   name: 'add-tutorial',
   data () {
     return {
       users: [],
-      user: {name: '', email: '', phone: ''},
+      userId: '',
+      userCode: '',
+      user: {firstName: '', lastName: '', email: '', phoneNumber: '', password: '', registrationID: '', facilityName: '', facilityAddress: ''},
       dataFields: ['users']
-
     }
   },
   created () {
     this.users = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
   },
   methods: {
-    saveToDo () {
-      this.users.push(this.user)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.users))
-    //  this.$router.push('/dashboard')
+    submit () {
+      axios({
+        method: 'POST',
+        url: 'http://35.222.99.37/signup',
+        data: this.user
+      }).then(response => {
+        this.userId = response.data.user.id
+        console.log('USERID', this.userId)
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    newOTP () {
+      axios.get('http://35.222.99.37/newotp/?id=' + this.userId)
+    },
+    verify () {
+      axios.get('http://35.222.99.37/verify/?id=' + this.userId + '&code=' + this.userCode)
     },
     checkStorage (key) {
       if (localStorage.getItem(key)) {
@@ -69,15 +91,18 @@ export default {
   border-color: #0DDBA9;
   border-width: 3px;
   border-radius: 10px;
-  height:40.27em;
-  padding:20px;
+  height:48.27em;
+  padding:18px;
   width: 482px;
   text-align: center;
   margin:auto;
   display:flex;
 }
 img{
-  width:130px;
+  width:80px;
+}
+.text{
+  margin-top: -35px;
 }
 p{
   text-align: center;
@@ -86,9 +111,7 @@ p{
   font-size: 18px;
   color: #048364;
 }
-.text{
-  margin-top:30px;
-}
+
 a{
   float:right;
   color: #A9A8A8;
@@ -118,9 +141,10 @@ a:hover{
  .submit{
    float:right;
    height:50px;
-   width:120px;
+   width:100%;
    background-color:#0DDBA9; 
    border: 0px;
+   margin-top:10px;
    border-radius: 24px;
    font-size: 18px;
    font-family: 'Roboto', sans-serif;

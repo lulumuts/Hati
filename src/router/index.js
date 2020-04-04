@@ -4,7 +4,7 @@ import Hello from '@/components/Hello'
 import auth from '@/auth'
 import Auth from '@okta/okta-vue'
 import Dashboard from '@/components/Dashboard.vue'
-import AddTutorial from '@/components/AddTutorial.vue'
+import Register from '@/components/Register.vue'
 import Login from '@/components/Login.vue'
 import List from '@/components/List.vue'
 import DrawerLayout from 'vue-drawer-layout'
@@ -48,9 +48,9 @@ export default new Router({
       beforeEnter: requireAuth
     },
     {
-      path: '/addtutorial',
-      name: 'addtutorial',
-      component: AddTutorial,
+      path: '/register',
+      name: 'Register',
+      component: Register,
       beforeEnter: requireAuth
     },
     {
@@ -67,7 +67,7 @@ export default new Router({
       path: '/logout',
       beforeEnter (to, from, next) {
         auth.logout()
-        next('/')
+        next('/login')
       }
     }
   ]

@@ -159,9 +159,6 @@ export default {
   text-align: center;
   margin-bottom: 100px;
 }
-/* #collapse-1{
-  display:none;
-} */
 
 iframe{
  padding:5%;
