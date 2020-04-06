@@ -8,7 +8,7 @@
                 
                <a href="javascript:void(0)" class="closebtn" v-on:click="closeNav">&times;</a>
                   <router-link v-if="loggedIn" to="/logout">Log out</router-link>
-                  <router-link v-if="!loggedIn" to="/login">Log in</router-link>
+                  <router-link v-if="!loggedIn" to="/">Log in</router-link>
                   <hr>
                   <!-- <a>Profile</a> -->
                   <a>Registered Doctors</a>
@@ -21,8 +21,8 @@
     <template v-if="$route.matched.length">
       <router-view></router-view>
     </template>
-    <template v-else>
-      <p>You are logged {{ loggedIn ? 'in' : 'out' }}</p>
+    <template class="logged" v-else>
+      <register></register>
     </template>
   </div>
 </template>
@@ -30,7 +30,10 @@
 <script>
 import auth from './auth'
 import axios from 'axios'
+import register from './components/Register.vue'
+
 export default {
+  components: { register },
   data () {
     return {
       loggedIn: auth.loggedIn(),
@@ -44,6 +47,14 @@ export default {
       this.loggedIn = loggedIn
     }
     this.isAuthenticated()
+    window.addEventListener('offline', () => {
+      this.connectivityStatus = false
+      this.connectivityText = 'You seem to be offline. Connect to see latest order status'
+    })
+    window.addEventListener('online', () => {
+      console.log('asd')
+      this.connectivityStatus = true
+    })
   },
   methods: {
     async isAuthenticated () {
@@ -94,7 +105,9 @@ export default {
     margin: 4%;
     background-color: #F6F6F6;
     border: 0;
-
+  }
+  .logged{
+    text-align:center;
   }
   .users p{
     height: 10px;

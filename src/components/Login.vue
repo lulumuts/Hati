@@ -20,7 +20,7 @@
            <p v-if="error" class="error">Bad login information</p>
           
           </b-card-text>
-          <a href="">Don't have an account? Sign up</a>
+          <router-link to="/register">Don't have an account? Sign up</router-link>
           </b-card>
         </b-row>
     </b-form>

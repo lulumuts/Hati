@@ -1,18 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/Hello'
 import auth from '@/auth'
 import Auth from '@okta/okta-vue'
 import Dashboard from '@/components/Dashboard.vue'
 import Register from '@/components/Register.vue'
 import Login from '@/components/Login.vue'
 import List from '@/components/List.vue'
-import DrawerLayout from 'vue-drawer-layout'
 import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormTextareaPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, AlertPlugin, NavbarPlugin, FormFilePlugin, EmbedPlugin, CollapsePlugin } from 'bootstrap-vue'
 
 Vue.use(Router)
 Vue.use(CardPlugin)
-Vue.use(DrawerLayout)
 Vue.use(NavbarPlugin)
 Vue.use(LayoutPlugin)
 Vue.use(FormPlugin)
@@ -38,8 +35,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Hello',
-      component: Hello
+      name: 'login',
+      component: Login
     },
     {
       path: '/dashboard',
@@ -60,14 +57,10 @@ export default new Router({
       beforeEnter: requireAuth
     },
     {
-      path: '/login',
-      component: Login
-    },
-    {
       path: '/logout',
       beforeEnter (to, from, next) {
         auth.logout()
-        next('/login')
+        next('/')
       }
     }
   ]
@@ -81,4 +74,9 @@ function requireAuth (to, from, next) {
   } else {
     next()
   }
+}
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+  })
 }

@@ -1,5 +1,22 @@
 <template>
   <div class="submit-form">
+          <template v-if="Submitted">
+          <b-card
+              img-alt="Image"
+              img-top
+              tag="article"
+              class="mb-2 b-card"
+              id="template-2"
+            > 
+            <img class="logo" src="@/assets/Hati-Logo.png">
+            <p>Ministry of  Health<br>Document Reader</p>
+          <b-card-text class="text">  
+            <b-input class="input" v-model="userCode" placeholder="Your code"></b-input>
+          <b-button class="submit" type="submit"  v-on:click="verify()">VERIFY</b-button><br>
+          </b-card-text>
+          </b-card>
+          </template>
+          <template v-else>
             <b-card
               img-alt="Image"
               img-top
@@ -10,7 +27,6 @@
             <img class="logo" src="@/assets/Hati-Logo.png">
             <p>Ministry of  Health<br>Document Reader</p>
           <b-card-text class="text">
-       
             <b-input class="input" v-model="user.firstName" placeholder="First Name"></b-input>
             <b-input class="input" v-model="user.lastName" placeholder="Last Name"></b-input>
             <b-input class="input" v-model="user.email" placeholder="Email"></b-input>
@@ -19,17 +35,14 @@
             <b-input class="input" v-model="user.registrationID" placeholder="Registration ID"></b-input>
             <b-input class="input" v-model="user.facilityName" placeholder="Facility Name"></b-input>
          <b-input class="input" v-model="user.facilityAddress" placeholder="Facility Address"></b-input>
-          <b-button class="submit" type="submit" v-on:click="submit()">SIGNUP</b-button><br>
-     <br><br><br><br>
-            <b-input class="input" v-model="userCode" placeholder="Your code"></b-input>
-          <b-button class="submit" type="submit"  v-on:click="verify()">VERIFY</b-button><br>
-      <br><br>
+          <b-button class="submit" type="submit"  v-on:click="submit()">SIGNUP</b-button><br>
           </b-card-text>
-          <!-- <a href="">Already have an account? Login</a> -->
+          <router-link to="/"><p>Already have an account? Login</p></router-link>
           </b-card>
-         
+          </template>
     </div>
 </template>
+
 
 <script>
 import axios from 'axios'
@@ -43,7 +56,8 @@ export default {
       userId: '',
       userCode: '',
       user: {firstName: '', lastName: '', email: '', phoneNumber: '', password: '', registrationID: '', facilityName: '', facilityAddress: ''},
-      dataFields: ['users']
+      dataFields: ['users'],
+      Submitted: false
     }
   },
   created () {
@@ -58,6 +72,7 @@ export default {
       }).then(response => {
         this.userId = response.data.user.id
         console.log('USERID', this.userId)
+        this.Submitted = true
       }).catch(error => {
         console.log(error)
       })
@@ -66,7 +81,11 @@ export default {
       axios.get('http://35.222.99.37/newotp/?id=' + this.userId)
     },
     verify () {
-      axios.get('http://35.222.99.37/verify/?id=' + this.userId + '&code=' + this.userCode)
+      axios.get('http://35.222.99.37/verify/?id=' + this.userId + '&code=' + this.userCode).then(function (response) {
+        if (response.status === 200) {
+          this.$router.push({path: '/'})
+        }
+      })
     },
     checkStorage (key) {
       if (localStorage.getItem(key)) {
@@ -91,7 +110,7 @@ export default {
   border-color: #0DDBA9;
   border-width: 3px;
   border-radius: 10px;
-  height:48.27em;
+  height:50em;
   padding:18px;
   width: 482px;
   text-align: center;
@@ -104,12 +123,21 @@ img{
 .text{
   margin-top: -35px;
 }
+#template-2{
+  max-width: 30rem;
+  height:40vh;
+  margin:auto;
+  display:flex;
+}
 p{
   text-align: center;
-  padding:5%;
+  padding:15px;
   font-family: 'Slabo 13px', serif;
   font-size: 18px;
-  color: #048364;
+  color: #A9A8A8;
+}
+p:hover{
+  color:#0DDBA9;
 }
 
 a{
