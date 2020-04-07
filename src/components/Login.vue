@@ -13,11 +13,11 @@
             <img class="logo" src="@/assets/Hati-Logo.png">
             <p>Ministry of  Health<br>Document Reader</p>
           <b-card-text class="text">
-            <b-input v-model="email" placeholder="Email" style="margin:20px 0 20px 0;"></b-input>
-          <b-input v-model="pass" placeholder="Password" type="password" style="margin:20px 0 20px 0;"></b-input>
+          <b-input v-model="user.email" placeholder="Email" style="margin:20px 0 20px 0;"></b-input>
+          <b-input v-model="user.password" placeholder="Password" type="password" style="margin:20px 0 20px 0;"></b-input>
           <b-button class="submit" type="submit">LOGIN</b-button><br>
-          
-           <p v-if="error" class="error">Bad login information</p>
+
+           <div v-if="message" class="alert alert-danger" role="alert">{{message}}</div>
           
           </b-card-text>
           <router-link to="/register">Don't have an account? Sign up</router-link>
@@ -28,22 +28,41 @@
 </template>
 
 <script>
-import auth from '../auth'
+// import auth from '../auth'
+// import User from '../models/user'
+// import axios from 'axios'
 export default {
   data () {
     return {
-      email: '',
-      pass: '',
+      // user: new User('', ''),
+      user: {email: '', password: ''},
+      message: '',
       error: false
+    }
+  },
+  computed: {
+    loggedIn () {
+      return this.$store.state.status.loggedIn
+    }
+  },
+  created () {
+    if (this.loggedIn) {
+      this.$router.push('/dashboard')
     }
   },
   methods: {
     login () {
-      auth.login(this.email, this.pass, loggedIn => {
-        if (!loggedIn) {
-          this.error = true
-        } else {
-          this.$router.replace(this.$route.query.redirect || '/dashboard')
+      this.$validator.validateAll().then(isValid => {
+        console.log('USER', this.user)
+        if (this.user.email && this.user.password) {
+          this.$store.dispatch('login', this.user)
+            .then((response) => {
+              this.$router.push('dashboard')
+              this.$router.go('dashboard')
+            }).catch(function (error) {
+              console.log(error)
+              this.message = (error.response && error.response.data) || error.message || error.toString()
+            })
         }
       })
     }
@@ -129,3 +148,70 @@ a:hover{
    background-color: #10BA91;
  }
 </style>
+
+<!------ 
+
+    login () {
+      axios.post('http://35.222.99.37/login', this.user).then(response => {
+        let userRole = response.data.user.userRole
+        localStorage.setItem('user', JSON.stringify(response.data.user))
+        localStorage.setItem('jwt', response.data.token)
+        console.log('token', response.data.token)
+        if (localStorage.getItem('jwt') != null) {
+          this.$emit('loggedIn')
+          if (this.$route.params.nextUrl != null) {
+            this.$router.push(this.$route.params.nextUrl)
+          } else {
+            if (userRole === 'admin') {
+              this.$router.push('dashboard')
+            } else {
+              this.$router.push('list')
+            }
+          }
+        }
+      }).catch(function (error) {
+        console.error(error.response)
+      })
+    }
+
+
+    login () {
+      auth.login(this.email, this.pass, loggedIn => {
+        if (!loggedIn) {
+          this.error = true
+        } else {
+          this.$router.replace(this.$route.query.redirect || '/dashboard')
+        }
+      })
+    }
+
+<template>
+  <div class="two">
+    <img class="ellipse" src="@/assets/Ellipse.svg">
+    <b-form @submit.prevent="login" autocomplete="off">
+          <b-row align-h="center" align-v="center">
+            <b-card
+              img-alt="Image"
+              img-top
+              tag="article"
+              style="max-width: 30rem;"
+              class="mb-2 b-card"
+            > 
+            <img class="logo" src="@/assets/Hati-Logo.png">
+            <p>Ministry of  Health<br>Document Reader</p>
+          <b-card-text class="text">
+          <b-input v-model="email" placeholder="Email" style="margin:20px 0 20px 0;"></b-input>
+          <b-input v-model="pass" placeholder="Password" type="password" style="margin:20px 0 20px 0;"></b-input>
+          <b-button class="submit" type="submit">LOGIN</b-button><br>
+          
+           <p v-if="error" class="error">Bad login information</p>
+          
+          </b-card-text>
+          <router-link to="/register">Don't have an account? Sign up</router-link>
+          </b-card>
+        </b-row>
+    </b-form>
+  </div>
+</template>
+
+------>

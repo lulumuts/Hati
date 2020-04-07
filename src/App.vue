@@ -46,7 +46,7 @@ export default {
     auth.onChange = loggedIn => {
       this.loggedIn = loggedIn
     }
-    this.isAuthenticated()
+    // this.isAuthenticated()
     window.addEventListener('offline', () => {
       this.connectivityStatus = false
       this.connectivityText = 'You seem to be offline. Connect to see latest order status'
@@ -57,9 +57,14 @@ export default {
     })
   },
   methods: {
-    async isAuthenticated () {
-      this.authenticated = await this.$auth.isAuthenticated()
+    logout: function () {
+      this.$store.dispatch('logout').then(() => {
+        this.$router.push('/')
+      })
     },
+    // async isAuthenticated () {
+    //   this.authenticated = await this.$auth.isAuthenticated()
+    // },
     handleToggleDrawer () {
       this.$refs.drawerLayout.toggle()
     },
@@ -76,13 +81,16 @@ export default {
         console.log(item)
         return !this.searchQuery || item.firstName.toLowerCase().indexOf(this.searchQuery.toLowerCase()) > -1 || item.lastName.toLowerCase().indexOf(this.searchQuery.toLowerCase()) > -1
       })
+    },
+    isLoggedIn: function () {
+      return this.$store.getters.isLoggedIn
     }
   },
   mounted () {
     axios.get('http://35.222.99.37/users')
       .then(response => {
         this.users = response.data.users
-        console.log('user', this.user)
+        console.log('user', this.users)
       }).catch(error => {
         console.log(error)
       })

@@ -16,6 +16,216 @@
           </b-card-text>
           </b-card>
           </template>
+
+          <template v-else>
+            <form name="form" @submit.prevent="register">
+              <div v-if="!successful">
+            <b-card
+              img-alt="Image"
+              img-top
+              tag="article"
+              style="max-width: 30rem;"
+              class="mb-2 b-card"
+            > 
+            <img class="logo" src="@/assets/Hati-Logo.png">
+            <p>Ministry of  Health<br>Document Reader</p>
+          <b-card-text class="text">
+            <b-input class="input" type="text" v-model="user.firstName" name="firstName" placeholder="First Name"></b-input>
+            <b-input class="input" type="text" v-model="user.lastName" name ="lastName" placeholder="Last Name"></b-input>
+            <b-input class="input" type="email" v-model="user.email" name="email" placeholder="Email"></b-input>
+            <b-input class="input" type="password" v-model="user.password" name="password" placeholder="Password"></b-input>
+            <b-input class="input" type="text" v-model="user.phoneNumber" name="phoneNumber" placeholder="Phone Number"></b-input>
+            <b-input class="input" type="text" v-model="user.registrationID" name="registrationID" placeholder="Registration ID"></b-input>
+            <b-input class="input" type="text" v-model="user.facilityName" name="facilityName" placeholder="Facility Name"></b-input>
+         <b-input class="input" type="text" v-model="user.facilityAddress" name="facilityAddress" placeholder="Facility Address"></b-input>
+          <b-button class="submit" type="submit">SIGNUP</b-button><br>
+          </b-card-text>
+          <router-link to="/"><p>Already have an account? Login</p></router-link>
+          </b-card>
+          </div>
+          </form>
+           <div
+        v-if="message"
+        class="alert"
+        :class="successful ? 'alert-success' : 'alert-danger'"
+      >{{message}}</div>
+          </template>
+    </div>
+</template>
+
+
+<script>
+import axios from 'axios'
+import User from '../models/user'
+
+const STORAGE_KEY = 'user-storage'
+export default {
+  data () {
+    return {
+      user: new User('', '', '', '', '', '', '', ''),
+      message: '',
+      successful: false,
+      submitted: false,
+      users: [],
+      userId: '',
+      userCode: '',
+      // user: {firstName: '', lastName: '', email: '', phoneNumber: '', password: '', registrationID: '', facilityName: '', facilityAddress: ''},
+      is_admin: null,
+      dataFields: ['users'],
+      Submitted: false
+    }
+  },
+  computed: {
+    loggedIn () {
+      return this.$store.state.auth.status.loggedIn
+    }
+  },
+  created () {
+    this.users = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+  },
+  mounted () {
+    if (this.loggedIn) {
+      this.$router.push('/dashboard')
+    }
+  },
+  methods: {
+    register () {
+      axios({
+        method: 'POST',
+        url: 'http://35.222.99.37/signup',
+        data: this.user
+      }).then(response => {
+        localStorage.setItem('user', JSON.stringify(response.data.user))
+        localStorage.setItem('jwt', response.data.token)
+        this.userId = response.data.user.id
+        console.log('USERID', this.userId)
+        this.Submitted = true
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    newOTP () {
+      axios.get('http://35.222.99.37/newotp/?id=' + this.userId)
+    },
+    verify () {
+      axios.get('http://35.222.99.37/verify/?id=' + this.userId + '&code=' + this.userCode).then(function (response) {
+        if (response.status === 200) {
+          this.$router.push({path: '/'})
+        }
+      })
+    },
+    checkStorage (key) {
+      if (localStorage.getItem(key)) {
+        try {
+          this[key] = JSON.parse(localStorage.getItem(key))
+        } catch (e) {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab|Slabo+13px&display=swap');
+
+.b-card{
+  border-color: #0DDBA9;
+  border-width: 3px;
+  border-radius: 10px;
+  height:50em;
+  padding:18px;
+  width: 482px;
+  text-align: center;
+  margin:auto;
+  display:flex;
+}
+img{
+  width:80px;
+}
+.text{
+  margin-top: -35px;
+}
+#template-2{
+  max-width: 30rem;
+  height:40vh;
+  margin:auto;
+  display:flex;
+}
+p{
+  text-align: center;
+  padding:15px;
+  font-family: 'Slabo 13px', serif;
+  font-size: 18px;
+  color: #A9A8A8;
+}
+p:hover{
+  color:#0DDBA9;
+}
+
+a{
+  float:right;
+  color: #A9A8A8;
+}
+a:hover{
+  color:#0DDBA9;
+  text-decoration: none;
+}
+.input{
+  border-radius: 20px;
+  height:45px;
+  background-color: #F6F6F6;
+  border: 0px;
+  color: lightgrey;
+  font-family: 'Roboto', serif;
+  letter-spacing: 0.9px;
+  margin:10px 0 10px 0;
+}
+.input[type=text]{
+  color: grey;
+}
+::placeholder {
+  color:#BDBDBD;
+  font-family: 'Roboto', serif;
+  letter-spacing: 0.9px;
+}
+ .submit{
+   float:right;
+   height:50px;
+   width:100%;
+   background-color:#0DDBA9; 
+   border: 0px;
+   margin-top:10px;
+   border-radius: 24px;
+   font-size: 18px;
+   font-family: 'Roboto', sans-serif;
+   letter-spacing: 1px;
+ }
+ .submit:hover{
+   background-color: #10BA91;
+ }
+</style>
+
+<!-------- 
+<template>
+  <div class="submit-form">
+          <template v-if="Submitted">
+          <b-card
+              img-alt="Image"
+              img-top
+              tag="article"
+              class="mb-2 b-card"
+              id="template-2"
+            > 
+            <img class="logo" src="@/assets/Hati-Logo.png">
+            <p>Ministry of  Health<br>Document Reader</p>
+          <b-card-text class="text">  
+            <b-input class="input" v-model="userCode" placeholder="Your code"></b-input>
+          <b-button class="submit" type="submit"  v-on:click="verify()">VERIFY</b-button><br>
+          </b-card-text>
+          </b-card>
+          </template>
           <template v-else>
             <b-card
               img-alt="Image"
@@ -182,3 +392,4 @@ a:hover{
    background-color: #10BA91;
  }
 </style>
+---->
