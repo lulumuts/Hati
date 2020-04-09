@@ -67,7 +67,9 @@ export default {
         url: 'http://35.222.99.37/delete/?category=foo&sub_category=bar&filename=' + filename + '&fileextn=' + fileext,
         method: 'GET',
         responseType: 'blob'
-      }).then(window.location.reload())
+      }).then(response => {
+        console.log('success')
+      })
     },
     select: function (ev, i) {
       let filename = i.fileName
@@ -126,6 +128,7 @@ export default {
     }
   },
   mounted () {
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
     axios.get('http://35.222.99.37/documents')
       .then(response => {
         this.documents = response.data.documents

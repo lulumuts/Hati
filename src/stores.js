@@ -6,7 +6,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     status: '',
-    token: localStorage.getItem('token') || '',
+    token: localStorage.getItem('jwt') || '',
     user: {}
   },
   mutations: {
@@ -28,34 +28,29 @@ export const store = new Vuex.Store({
   },
   actions: {
     login ({ commit }, user) {
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        axios({ url: 'http://35.222.99.37/login', data: user, method: 'POST' })
-          .then(resp => {
-            console.log('response', resp)
-            const token = resp.data.token
-            const user = resp.data.user
-            localStorage.setItem('user', JSON.stringify(resp.data))
-            localStorage.setItem('token', token)
-            // Add the following line:
-            axios.defaults.headers.common['Authorization'] = token
-            commit('auth_success', token, user)
-            resolve(resp)
-          })
-          .catch(err => {
-            commit('auth_error')
-            localStorage.removeItem('token')
-            reject(err)
-          })
+        axios({
+          url: 'http://35.222.99.37/login',
+          data: user,
+          method: 'POST'
+        }).then(response => {
+          const token = response.data.token
+          const user = response.data.user
+          localStorage.setItem('token', token)
+          localStorage.setItem('user', JSON.stringify(user))
+          commit('auth_success', token, user)
+          resolve(response)
+        }).catch(err => {
+          commit('auth_error')
+          localStorage.removeItem('token')
+          reject(err)
+        })
       })
     },
-    logout ({ commit }) {
-      return new Promise((resolve, reject) => {
-        commit('logout')
-        localStorage.removeItem('token')
-        delete axios.defaults.headers.common['Authorization']
-        resolve()
-      })
+    logout () {
+      localStorage.removeItem('user')
     }
   },
   getters: {

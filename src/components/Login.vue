@@ -43,6 +43,15 @@ export default {
   computed: {
     loggedIn () {
       return this.$store.state.status.loggedIn
+    },
+    userRole: function () {
+      let role = this.$store.state.status
+      if (role === 'user') {
+        this.$router.push('/list')
+      } else if (role === 'admin') {
+        this.$router.push('/dashboard')
+      }
+      return role
     }
   },
   created () {
@@ -53,12 +62,11 @@ export default {
   methods: {
     login () {
       this.$validator.validateAll().then(isValid => {
-        console.log('USER', this.user)
+        console.log('state', this.$store.state)
         if (this.user.email && this.user.password) {
           this.$store.dispatch('login', this.user)
             .then((response) => {
-              this.$router.push('dashboard')
-              this.$router.go('dashboard')
+              console.log('test')
             }).catch(function (error) {
               console.log(error)
               this.message = (error.response && error.response.data) || error.message || error.toString()

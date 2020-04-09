@@ -29,7 +29,7 @@
 
 <script>
 import auth from './auth'
-import axios from 'axios'
+// import axios from 'axios'
 import register from './components/Register.vue'
 
 export default {
@@ -85,16 +85,16 @@ export default {
     isLoggedIn: function () {
       return this.$store.getters.isLoggedIn
     }
-  },
-  mounted () {
-    axios.get('http://35.222.99.37/users')
-      .then(response => {
-        this.users = response.data.users
-        console.log('user', this.users)
-      }).catch(error => {
-        console.log(error)
-      })
   }
+  // mounted () {
+  //   axios.get('http://35.222.99.37/users')
+  //     .then(response => {
+  //       this.users = response.data.users
+  //       console.log('user', this.users)
+  //     }).catch(error => {
+  //       console.log(error)
+  //     })
+  // }
 }
 </script>
 
