@@ -66,7 +66,14 @@ export default {
         if (this.user.email && this.user.password) {
           this.$store.dispatch('login', this.user)
             .then((response) => {
-              console.log('test')
+              console.log('YOUR USER', response.data.userDetails)
+              const role = response.data.userDetails
+              if (role.userRole === 'admin') {
+                this.$router.push('/dashboard')
+                this.$router.go('/dashboard')
+              } else {
+                this.$router.push('/list')
+              }
             }).catch(function (error) {
               console.log(error)
               this.message = (error.response && error.response.data) || error.message || error.toString()

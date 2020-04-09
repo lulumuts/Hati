@@ -37,7 +37,7 @@ export const store = new Vuex.Store({
           method: 'POST'
         }).then(response => {
           const token = response.data.token
-          const user = response.data.user
+          const user = response.data.userDetails
           localStorage.setItem('token', token)
           localStorage.setItem('user', JSON.stringify(user))
           commit('auth_success', token, user)
@@ -55,6 +55,13 @@ export const store = new Vuex.Store({
   },
   getters: {
     isLoggedIn: state => !!state.token,
-    authStatus: state => state.status
+    authStatus: state => state.status,
+    isAdmin (state) {
+      return state.user && state.user.role === 'admin'
+    },
+    isUser (state) {
+      return state.user && state.user.role === 'user'
+    }
   }
+
 })

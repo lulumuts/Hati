@@ -5,7 +5,7 @@
     title ="Preview"
   >
   <div v-for="(document, i) in documents">
-  <iframe id="iframe" height="900px" width="100%" :src="Url" v-if="Url" :ref="downloads"></iframe>
+  <iframe id="iframe" height="900px" width="100%" :src="Url" v-if="Url"></iframe>
     <a>
     <b-button class="preview" id="download" v-on:click="select($event, document)" @change="onFileChange" :ref="document">DOWNLOAD</b-button>
     </a>
@@ -44,34 +44,27 @@ export default {
 
       reader.onload = (e) => {
         vm.image = file.toString('base64')
-        console.log('is it this', vm.image)
       }
       reader.readAsDataURL(file)
     }
   },
   mounted () {
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
     axios.get('http://35.222.99.37/documents')
       .then(response => {
         this.documents = response.data.documents
         this.documents.forEach((item) => {
-          console.log('found:', item.fileName)
-          console.log('extn:', item.fileExt)
           return axios({
             url: 'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + item.fileName + '&fileextn=' + item.fileExt,
             method: 'GET',
             responseType: 'blob'
           }).then((response) => {
-            console.log('response', response)
             let blob = response.data
-            console.log('blob', blob)
             const file = new File([blob], 'FILENAME', {type: 'application/pdf'})
-            console.log('FILE', file)
             const reader = new FileReader()
             const that = this
             reader.onload = function (e) {
               that.Url = e.target.result
-              console.log('e.target', that.$refs.downloads)
-              // console.log('that.URL', response)
             }
             reader.readAsDataURL(file)
           })
@@ -81,14 +74,6 @@ export default {
       })
     var frame = document.getElementById('iframe')
     console.log(frame)
-    // var frameDoc = frame.contentDocument
-    // var info = document.getElementById('info')
-
-    // var target = frameDoc.getElementById('overview')
-    // frameDoc.scrollingElement.scrollTop = target.offsetTop
-
-    // info.innerText = 'Y offset after scrolling: ' +
-    // frame.contentWindow.pageYOffset + ' pixels'
   }
 }
 </script>
