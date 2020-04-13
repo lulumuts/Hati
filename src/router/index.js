@@ -24,12 +24,6 @@ Vue.use(EmbedPlugin)
 Vue.use(ButtonPlugin)
 Vue.use(FormFilePlugin)
 Vue.use(AlertPlugin)
-// Vue.use(Auth, {
-//   issuer: 'https://dev-779517/oauth2/default',
-//   clientId: '0oa4o7ak3f5XqY2UK4x6',
-//   redirectUri: 'http://localhost:8080/implicit/callback',
-//   scope: 'openid profile email'
-// })
 
 let router = new Router({
   mode: 'history',

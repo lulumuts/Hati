@@ -17,7 +17,7 @@
           <b-input v-model="user.password" placeholder="Password" type="password" style="margin:20px 0 20px 0;"></b-input>
           <b-button class="submit" type="submit">LOGIN</b-button><br>
 
-           <div v-if="message" class="alert alert-danger" role="alert">{{message}}</div>
+           <!-- <div v-if="message" class="alert alert-danger" role="alert">{{message}}</div> -->
           
           </b-card-text>
           <router-link to="/register">Don't have an account? Sign up</router-link>
@@ -28,30 +28,18 @@
 </template>
 
 <script>
-// import auth from '../auth'
-// import User from '../models/user'
-// import axios from 'axios'
+
 export default {
   data () {
     return {
-      // user: new User('', ''),
       user: {email: '', password: ''},
-      message: '',
-      error: false
+      error: false,
+      messages: []
     }
   },
   computed: {
     loggedIn () {
       return this.$store.state.status.loggedIn
-    },
-    userRole: function () {
-      let role = this.$store.state.status
-      if (role === 'user') {
-        this.$router.push('/list')
-      } else if (role === 'admin') {
-        this.$router.push('/dashboard')
-      }
-      return role
     }
   },
   created () {
@@ -66,7 +54,6 @@ export default {
         if (this.user.email && this.user.password) {
           this.$store.dispatch('login', this.user)
             .then((response) => {
-              console.log('YOUR USER', response.data.userDetails)
               const role = response.data.userDetails
               if (role.userRole === 'admin') {
                 this.$router.push('/dashboard')
@@ -74,9 +61,12 @@ export default {
               } else {
                 this.$router.push('/list')
               }
-            }).catch(function (error) {
-              console.log(error)
-              this.message = (error.response && error.response.data) || error.message || error.toString()
+            }).catch(error => {
+              let result = error.response.data.message
+              this.messages.push(result)
+              alert(result)
+              this.$bvToast.toast(result)
+              // console.log(result)
             })
         }
       })

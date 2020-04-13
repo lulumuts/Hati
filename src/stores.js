@@ -7,7 +7,8 @@ export const store = new Vuex.Store({
   state: {
     status: '',
     token: localStorage.getItem('jwt') || '',
-    user: {}
+    user: {},
+    error: ''
   },
   mutations: {
     auth_request (state) {
@@ -38,6 +39,8 @@ export const store = new Vuex.Store({
         }).then(response => {
           const token = response.data.token
           const user = response.data.userDetails
+          const error = response.data.error
+          localStorage.setItem('error', error)
           localStorage.setItem('token', token)
           localStorage.setItem('user', JSON.stringify(user))
           commit('auth_success', token, user)

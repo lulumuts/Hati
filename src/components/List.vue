@@ -33,6 +33,23 @@ export default {
     }
   },
   methods: {
+    select: function (ev, i) {
+      let filename = i.fileName
+      let fileext = i.fileExt
+      console.log(filename, fileext)
+      axios({
+        url: 'http://35.222.99.37/read/?category=foo&sub_category=bar&filename=' + filename + '&fileextn=' + fileext,
+        method: 'GET',
+        responseType: 'blob'
+      }).then((response) => {
+        var fileURL = window.URL.createObjectURL(new Blob([response.data]))
+        var fileLink = document.createElement('a')
+        fileLink.href = fileURL
+        fileLink.setAttribute('download', 'MoH.pdf')
+        document.body.appendChild(fileLink)
+        fileLink.click()
+      })
+    },
     onFileChange (event) {
       this.attachment.file = event.target.files[0]
       this.attachment.name = event.target.files[0].name

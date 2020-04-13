@@ -13,6 +13,7 @@
           <b-card-text class="text">  
             <b-input class="input" v-model="userCode" placeholder="Your code"></b-input>
           <b-button class="submit" type="submit"  v-on:click="verify()">VERIFY</b-button><br>
+          <b-button v-on:click="newOTP()"><p>Didn't receive a code?</p></b-button>
           </b-card-text>
           </b-card>
           </template>
@@ -77,7 +78,7 @@ export default {
   },
   computed: {
     loggedIn () {
-      return this.$store.state.auth.status.loggedIn
+      return this.$store.state.status.loggedIn
     }
   },
   created () {
@@ -157,7 +158,7 @@ p{
   text-align: center;
   padding:15px;
   font-family: 'Slabo 13px', serif;
-  font-size: 18px;
+  font-size: 16px;
   color: #A9A8A8;
 }
 p:hover{
