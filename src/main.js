@@ -4,6 +4,7 @@ import router from './router'
 import VeeValidate from 'vee-validate'
 import Axios from 'axios'
 import Vuex from 'vuex'
+import swal from 'sweetalert2'
 import {store} from './stores.js'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -14,10 +15,11 @@ const token = localStorage.getItem('token')
 if (token) {
   Vue.prototype.$http.defaults.headers.common['Authorization'] = token
 }
-
+window.Swal = swal
 Vue.config.productionTip = false
 Vue.use(VeeValidate)
 Vue.use(Vuex)
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

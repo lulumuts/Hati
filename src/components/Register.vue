@@ -13,7 +13,7 @@
           <b-card-text class="text">  
             <b-input class="input" v-model="userCode" placeholder="Your code"></b-input>
           <b-button class="submit" type="submit"  v-on:click="verify()">VERIFY</b-button><br>
-          <b-button v-on:click="newOTP()"><p>Didn't receive a code?</p></b-button>
+          <a v-on:click="newOTP()">Didn't receive a code?</a>
           </b-card-text>
           </b-card>
           </template>
@@ -66,14 +66,13 @@ export default {
       user: new User('', '', '', '', '', '', '', ''),
       message: '',
       successful: false,
-      submitted: false,
       users: [],
       userId: '',
       userCode: '',
-      // user: {firstName: '', lastName: '', email: '', phoneNumber: '', password: '', registrationID: '', facilityName: '', facilityAddress: ''},
       is_admin: null,
       dataFields: ['users'],
-      Submitted: false
+      Submitted: false,
+      verified: false
     }
   },
   computed: {
@@ -168,6 +167,7 @@ p:hover{
 a{
   float:right;
   color: #A9A8A8;
+  font-size: 16px;
 }
 a:hover{
   color:#0DDBA9;

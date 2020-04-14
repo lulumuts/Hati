@@ -11,16 +11,16 @@
               class="mb-2 b-card"
             > 
             <img class="logo" src="@/assets/Hati-Logo.png">
-            <p>Ministry of  Health<br>Document Reader</p>
+            <p><span>Ministry of  Health<br>Document Reader</span></p>
           <b-card-text class="text">
-          <b-input v-model="user.email" placeholder="Email" style="margin:20px 0 20px 0;"></b-input>
-          <b-input v-model="user.password" placeholder="Password" type="password" style="margin:20px 0 20px 0;"></b-input>
-          <b-button class="submit" type="submit">LOGIN</b-button><br>
-
-           <!-- <div v-if="message" class="alert alert-danger" role="alert">{{message}}</div> -->
-          
+          <b-input v-model="user.email" placeholder="Email"></b-input>
+          <b-input v-model="user.password" placeholder="Password" type="password"></b-input>
+          <router-link id="password" to="/user">Forget your password?</router-link>
+          <br>
+          <b-button class="submit" type="submit">LOGIN</b-button>
+          <br>
           </b-card-text>
-          <router-link to="/register">Don't have an account? Sign up</router-link>
+          <router-link id="register" to="/register"><p>Don't have an account? Sign up</p></router-link>
           </b-card>
         </b-row>
     </b-form>
@@ -28,13 +28,15 @@
 </template>
 
 <script>
+import swal from 'sweetalert2'
 
 export default {
   data () {
     return {
       user: {email: '', password: ''},
       error: false,
-      messages: []
+      messages: [],
+      reg_id: ''
     }
   },
   computed: {
@@ -59,14 +61,17 @@ export default {
                 this.$router.push('/dashboard')
                 this.$router.go('/dashboard')
               } else {
-                this.$router.push('/list')
+                this.$router.go('/list')
               }
             }).catch(error => {
               let result = error.response.data.message
               this.messages.push(result)
-              alert(result)
-              this.$bvToast.toast(result)
-              // console.log(result)
+              console.log(this.user)
+              swal.fire({
+                text: error.response.data.message,
+                icon: 'error',
+                showCloseButton: true
+              })
             })
         }
       })
@@ -102,6 +107,7 @@ input{
   color: lightgrey;
   font-family: 'Roboto', serif;
   letter-spacing: 0.9px;
+  margin: 20px 0 20px 0;
 }
 input[type=text]{
   color: grey;
@@ -111,10 +117,23 @@ input[type=text]{
   font-family: 'Roboto', serif;
   letter-spacing: 0.9px;
 }
+span {
+  font-family: 'Slabo 13px', serif;
+}
+#register p{
+  font-size:16px;
+  margin: 5px 0 0 0;
+  padding:16px;
+  font-weight:lighter;
+}
+#password{
+  font-size:16px;
+  margin-top: -12px;
+}
 p{
   text-align: center;
   padding:5%;
-  font-family: 'Slabo 13px', serif;
+  font-family: 'Roboto', serif;
   font-size: 18px;
   color: #048364;
 }
@@ -134,14 +153,15 @@ a:hover{
   border-width: 3px;
   border-radius: 10px;
   height:40.27em;
-  padding:20px;
+  padding:18px;
   width: 482px;
   margin-top:-65vh;
 }
  .submit{
    float:right;
    height:50px;
-   width:120px;
+   width:100%;
+   /* width:120px; */
    background-color:#0DDBA9; 
    border: 0px;
    border-radius: 24px;
@@ -153,70 +173,3 @@ a:hover{
    background-color: #10BA91;
  }
 </style>
-
-<!------ 
-
-    login () {
-      axios.post('http://35.222.99.37/login', this.user).then(response => {
-        let userRole = response.data.user.userRole
-        localStorage.setItem('user', JSON.stringify(response.data.user))
-        localStorage.setItem('jwt', response.data.token)
-        console.log('token', response.data.token)
-        if (localStorage.getItem('jwt') != null) {
-          this.$emit('loggedIn')
-          if (this.$route.params.nextUrl != null) {
-            this.$router.push(this.$route.params.nextUrl)
-          } else {
-            if (userRole === 'admin') {
-              this.$router.push('dashboard')
-            } else {
-              this.$router.push('list')
-            }
-          }
-        }
-      }).catch(function (error) {
-        console.error(error.response)
-      })
-    }
-
-
-    login () {
-      auth.login(this.email, this.pass, loggedIn => {
-        if (!loggedIn) {
-          this.error = true
-        } else {
-          this.$router.replace(this.$route.query.redirect || '/dashboard')
-        }
-      })
-    }
-
-<template>
-  <div class="two">
-    <img class="ellipse" src="@/assets/Ellipse.svg">
-    <b-form @submit.prevent="login" autocomplete="off">
-          <b-row align-h="center" align-v="center">
-            <b-card
-              img-alt="Image"
-              img-top
-              tag="article"
-              style="max-width: 30rem;"
-              class="mb-2 b-card"
-            > 
-            <img class="logo" src="@/assets/Hati-Logo.png">
-            <p>Ministry of  Health<br>Document Reader</p>
-          <b-card-text class="text">
-          <b-input v-model="email" placeholder="Email" style="margin:20px 0 20px 0;"></b-input>
-          <b-input v-model="pass" placeholder="Password" type="password" style="margin:20px 0 20px 0;"></b-input>
-          <b-button class="submit" type="submit">LOGIN</b-button><br>
-          
-           <p v-if="error" class="error">Bad login information</p>
-          
-          </b-card-text>
-          <router-link to="/register">Don't have an account? Sign up</router-link>
-          </b-card>
-        </b-row>
-    </b-form>
-  </div>
-</template>
-
------->

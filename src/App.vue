@@ -1,17 +1,15 @@
 <template>
   <div id="app">
       <b-navbar>
-        <b-navbar-brand href="#"><img src="@/assets/Hati-Logo.png"></b-navbar-brand>
+        <b-navbar-brand href="/"><img src="@/assets/Hati-Logo.png"></b-navbar-brand>
           <b-navbar-nav class="ml-auto">
             <b-nav-item href="#">      
               <div id="mySidenav" class="sidenav">
-                
                <a href="javascript:void(0)" class="closebtn" v-on:click="closeNav">&times;</a>
                   <router-link v-if="loggedIn" to="/logout">Log out</router-link>
                   <router-link v-if="!loggedIn" to="/">Log in</router-link>
                   <hr>
                   <!-- <a>Profile</a> -->
-                  <a>Registered Doctors</a>
                   <a>Registered Doctors</a>
               </div>
               <span style="font-size:30px;cursor:pointer" v-on:click="openNav">&#9776;</span>
@@ -46,27 +44,20 @@ export default {
     auth.onChange = loggedIn => {
       this.loggedIn = loggedIn
     }
-    // this.isAuthenticated()
-    window.addEventListener('offline', () => {
-      this.connectivityStatus = false
-      this.connectivityText = 'You seem to be offline. Connect to see latest order status'
-    })
-    window.addEventListener('online', () => {
-      console.log('asd')
-      this.connectivityStatus = true
-    })
+    // window.addEventListener('offline', () => {
+    //   this.connectivityStatus = false
+    //   this.connectivityText = 'You seem to be offline. Connect to see latest order status'
+    // })
+    // window.addEventListener('online', () => {
+    //   console.log('asd')
+    //   this.connectivityStatus = true
+    // })
   },
   methods: {
     logout: function () {
       this.$store.dispatch('logout').then(() => {
         this.$router.push('/')
       })
-    },
-    // async isAuthenticated () {
-    //   this.authenticated = await this.$auth.isAuthenticated()
-    // },
-    handleToggleDrawer () {
-      this.$refs.drawerLayout.toggle()
     },
     openNav () {
       document.getElementById('mySidenav').style.width = '350px'
