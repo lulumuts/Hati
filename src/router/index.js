@@ -1,29 +1,30 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import auth from '@/auth'
-// import Auth from '@okta/okta-vue'
 import Dashboard from '@/components/Dashboard.vue'
 import Register from '@/components/Register.vue'
 import Login from '@/components/Login.vue'
+import {store} from '../stores.js'
+import axios from 'axios'
 import User from '@/components/User.vue'
 import LoggedIn from '@/components/LoggedIn.vue'
 import List from '@/components/List.vue'
-import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormTextareaPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, AlertPlugin, NavbarPlugin, FormFilePlugin, EmbedPlugin, CollapsePlugin } from 'bootstrap-vue'
+import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, NavbarPlugin, FormFilePlugin, EmbedPlugin, PaginationPlugin, SpinnerPlugin } from 'bootstrap-vue'
 
 Vue.use(Router)
 Vue.use(CardPlugin)
 Vue.use(NavbarPlugin)
-Vue.use(LayoutPlugin)
 Vue.use(FormPlugin)
 Vue.use(FormInputPlugin)
-Vue.use(FormTextareaPlugin)
 Vue.use(FormGroupPlugin)
 Vue.use(TablePlugin)
-Vue.use(CollapsePlugin)
+Vue.use(LayoutPlugin)
 Vue.use(EmbedPlugin)
+Vue.use(PaginationPlugin)
 Vue.use(ButtonPlugin)
 Vue.use(FormFilePlugin)
-Vue.use(AlertPlugin)
+Vue.use(PaginationPlugin)
+Vue.use(SpinnerPlugin)
 
 let router = new Router({
   mode: 'history',
@@ -35,7 +36,7 @@ let router = new Router({
       component: Login
     },
     {
-      path: '/login',
+      path: '/users',
       name: 'loggedin',
       component: LoggedIn
     },
@@ -84,48 +85,14 @@ let router = new Router({
     }
   ]
 })
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(record => record.meta.requiresAuth)) {
-//     if (localStorage.getItem('jwt') == null) {
-//       next({
-//         path: '/',
-//         params: { nextUrl: to.fullPath }
-//       })
-//     } else {
-//       let user = JSON.parse(localStorage.getItem('user'))
-//       if (to.matched.some(record => record.meta.is_admin)) {
-//         if (user.is_admin === 1) {
-//           next()
-//         } else {
-//           next({name: 'dashboard'})
-//         }
-//       } else {
-//         next()
-//       }
-//     }
-//   } else if (to.matched.some(record => record.meta.guest)) {
-//     if (localStorage.getItem('jwt' == null)) {
-//       next()
-//     } else {
-//       next({ name: '/' })
-//     }
-//   } else {
-//     next()
-//   }
-// })
+axios.interceptors.response.use(function (response) {
+  return response
+}, function (error) {
+  console.log(error.response.data)
+  if (error.response.status === 401 || error.response.status === 403) {
+    store.dispatch('logout')
+    router.push('/')
+  }
+  return Promise.reject(error)
+})
 export default router
-// function requireAuth (to, from, next) {
-//   if (!auth.loggedIn()) {
-//     next({
-//       path: '/login',
-//       query: { redirect: to.fullPath }
-//     })
-//   } else {
-//     next()
-//   }
-// }
-// if ('serviceWorker' in navigator) {
-//   window.addEventListener('load', () => {
-//     navigator.serviceWorker.register('/service-worker.js')
-//   })
-// }

@@ -2,9 +2,6 @@
 <div>
     <div v-if="submitted">
     <b-card
-        img-alt="Image"
-        img-top
-        tag="article"
         class="mb-2 b-card pass-reset"
         > 
         <p id="passResetTitle"><span>Received your Code?</span><br>Set your new Password</p>

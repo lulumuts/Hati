@@ -1,12 +1,17 @@
 <template>
   <div class="edit-form">
+        <template v-if="isLoading">
+    <b-spinner class="spinner" type="grow"  label="Loading..."></b-spinner>
+    </template>
+    <template v-else>
   <b-row>
   <b-col lg="6" sm="12">
+
  <b-card
     class="b-card"
     title ="Preview"
   >
-  <div v-for="(document, i) in documents">
+  <div v-for="(document, i) in documents" v-bind:key="i">
   <iframe height="900px" width="100%" :src="Url" v-if="Url" :ref="downloads"></iframe>
   <b-row style="text-align:center;">
     <b-col lg="6" style="padding:0px;">
@@ -35,13 +40,13 @@
         </b-card>
       </b-col>
     </b-row>
-  </b-container>
+    </template>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-
+import swal from 'sweetalert2'
 export default {
   name: 'dashboard',
   data () {
@@ -54,24 +59,37 @@ export default {
       },
       previewUrl: '',
       Url: '',
-      downloads: 'downloads'
+      downloads: 'downloads',
+      isLoading: false
     }
   },
   props: ['file', 'ext'],
   methods: {
     deleteFile: function (ev, i) {
-      let filename = i.fileName
-      let fileext = i.fileExt
-      console.log(filename, fileext)
-      axios({
-        url: 'http://35.222.99.37/delete/?category=foo&sub_category=bar&filename=' + filename + '&fileextn=' + fileext,
-        method: 'GET',
-        responseType: 'blob'
-      }).then(response => {
-        console.log('success')
+      swal.fire({
+        text: 'Are you sure you want to delete this file?',
+        icon: 'question',
+        showConfirmButton: true,
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          this.isLoading = true
+          let filename = i.fileName
+          let fileext = i.fileExt
+          console.log(filename, fileext)
+          axios({
+            url: 'http://35.222.99.37/delete/?category=foo&sub_category=bar&filename=' + filename + '&fileextn=' + fileext,
+            method: 'GET',
+            responseType: 'blob'
+          }).then(response => {
+            this.isLoading = false
+            window.location.reload()
+          })
+        }
       })
     },
     select: function (ev, i) {
+      this.isLoading = true
       let filename = i.fileName
       let fileext = i.fileExt
       console.log(filename, fileext)
@@ -80,6 +98,7 @@ export default {
         method: 'GET',
         responseType: 'blob'
       }).then((response) => {
+        this.isLoading = false
         var fileURL = window.URL.createObjectURL(new Blob([response.data]))
         var fileLink = document.createElement('a')
         fileLink.href = fileURL
@@ -104,12 +123,14 @@ export default {
       reader.readAsDataURL(file)
     },
     submitFile () {
+      this.isLoading = true
       let formData = new FormData()
       formData.append('document', this.attachment.file)
       axios({ method: 'post',
         url: 'http://35.222.99.37/upload/?category=foo&sub_category=bar',
         data: formData
       }).then(result => {
+        this.isLoading = false
         const reader = new FileReader()
         const that = this
         reader.onload = function (e) {
@@ -181,6 +202,19 @@ iframe{
   color: #0DDBA9;
   margin-top: 15px;
 }
+.spinner {
+  position: fixed;
+  z-index: 999;
+  height: 4em;
+  width: 4em;
+  overflow: visible;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  color:#0DDBA9;
+}
 .preview{
   width:98%;
   height:50px;
@@ -201,7 +235,6 @@ iframe{
   border-width: 2px;
   float: right;
   margin-top:2%;
-  /* border-radius: 20px; */
   height: 40px;
   width: 110px;
   font-family: 'Roboto', serif;
@@ -223,19 +256,3 @@ output p {
   text-align: center;
 }
 </style>
-<!------ 
-  <embed width="400" height="600" :src="previewUrl" v-if="previewUrl" style="margin-left:-50px;">
-    <ul id="documents">
-      <li v-for="(document, i) in documents">
-        <p>{{document.fileName}}</p>
-        <p>{{document.fileExt}}</p>
-        <embed width="400" height="600" :src="Url" v-if="Url" :ref="downloads"  style="margin-left:-50px;">
-        <a >
-        <b-button id="download" v-on:click="select($event, document)" @change="onFileChange" :ref="document"><p>DOWNLOAD</p></b-button>
-        </a>
-        <a>
-        <b-button v-on:click="deleteFile($event, document)"><p>DELETE</p></b-button>
-        </a>
-      </li>
-    </ul>
------->

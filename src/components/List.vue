@@ -4,7 +4,7 @@
     class="b-card"
     title ="Preview"
   >
-  <div v-for="(document, i) in documents">
+  <div v-for="(document, i) in documents" v-bind:key="i">
   <iframe id="iframe" height="900px" width="100%" :src="Url" v-if="Url"></iframe>
     <a>
     <b-button class="preview" id="download" v-on:click="select($event, document)" @change="onFileChange" :ref="document">DOWNLOAD</b-button>

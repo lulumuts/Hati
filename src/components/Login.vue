@@ -1,6 +1,12 @@
 <template>
   <div class="two">
+    <template v-if="isLoading">
+     <b-spinner class="spinner" type="grow"  label="Loading..."></b-spinner>
+     </template>
+
+    <template v-else>
     <img class="ellipse" src="@/assets/Ellipse.svg">
+   
     <b-form @submit.prevent="login" autocomplete="off">
           <b-row align-h="center" align-v="center">
             <b-card
@@ -24,6 +30,8 @@
           </b-card>
         </b-row>
     </b-form>
+    </template>
+
   </div>
 </template>
 
@@ -36,7 +44,8 @@ export default {
       user: {email: '', password: ''},
       error: false,
       messages: [],
-      reg_id: ''
+      reg_id: '',
+      isLoading: false
     }
   },
   computed: {
@@ -51,16 +60,19 @@ export default {
   },
   methods: {
     login () {
+      this.isLoading = true
       this.$validator.validateAll().then(isValid => {
         console.log('state', this.$store.state)
         if (this.user.email && this.user.password) {
           this.$store.dispatch('login', this.user)
             .then((response) => {
+              this.loading = false
               const role = response.data.userDetails
               if (role.userRole === 'admin') {
                 this.$router.push('/dashboard')
                 this.$router.go('/dashboard')
               } else {
+                this.$router.push('/list')
                 this.$router.go('/list')
               }
             }).catch(error => {
@@ -91,6 +103,19 @@ export default {
   width:35%;
   margin:auto;
   display:flex;
+}
+.spinner {
+  position: fixed;
+  z-index: 999;
+  height: 4em;
+  width: 4em;
+  overflow: visible;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  color:#0DDBA9;
 }
 .ellipse{
   margin:auto;
@@ -155,7 +180,7 @@ a:hover{
   height:40.27em;
   padding:18px;
   width: 482px;
-  margin-top:-65vh;
+  margin-top:-635.5px;
 }
  .submit{
    float:right;
