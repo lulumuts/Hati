@@ -71,8 +71,8 @@ export default {
                 this.$router.push('/dashboard')
                 this.$router.go('/dashboard')
               } else {
-                this.$router.push('/list')
-                this.$router.go('/list')
+                this.$router.push('/documents')
+                this.$router.go('/documents')
               }
             }).catch(error => {
               let result = error.response.data.message

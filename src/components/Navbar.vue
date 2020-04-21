@@ -11,7 +11,7 @@
                   <hr>
                   <router-link v-if="loggedIn && isAdmin" to="/users"><button class="menu-link">REGISTERED DOCTORS</button></router-link>
                   <router-link v-if="loggedIn && isAdmin" to="/dashboard"><button class="menu-link">DASHBOARD</button></router-link>
-                  <router-link v-if="loggedIn" to="/list"><button class="menu-link">DOCUMENTS</button></router-link>
+                  <router-link v-if="loggedIn && isUser" to="/documents"><button class="menu-link">DOCUMENTS</button></router-link>
               </div>
               <span style="font-size:30px;cursor:pointer" v-on:click="openNav">&#9776;</span>
             </b-nav-item>
@@ -65,6 +65,9 @@ export default {
     isAdmin: function () {
       console.log(this.$store.state.user)
       return this.$store.getters.isAdmin
+    },
+    isUser: function () {
+      return this.$store.getters.isUser
     },
     loggedOut: function () {
       return this.$store.dispatch('logout')

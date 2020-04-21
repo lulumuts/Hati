@@ -60,8 +60,8 @@ let router = new Router({
       }
     },
     {
-      path: '/Documents',
-      name: 'Documents',
+      path: '/documents',
+      name: 'documents',
       component: Documents,
       meta: {
         requiresAuth: true,
