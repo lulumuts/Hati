@@ -1,5 +1,8 @@
 <template>
   <div class="submit-form">
+     <template v-if="isLoading">
+    <b-spinner class="spinner" type="grow"  label="Loading..."></b-spinner>
+    </template>
           <template v-if="Submitted">
           <b-card
               img-alt="Image"
@@ -12,8 +15,19 @@
             <p>Ministry of  Health<br>Document Reader</p>
           <b-card-text class="text">  
             <b-input class="input" v-model="userCode" placeholder="Your code"></b-input>
-          <b-button class="submit" type="submit"  v-on:click="verify()">VERIFY</b-button><br>
-          <a v-on:click="newOTP()">Didn't receive a code?</a>
+          <b-button class="submit" type="submit" @click="verify()">VERIFY</b-button><br>
+    <b-alert
+      :show="dismissCountDown"
+      v-if="showAlert"
+      dismissible
+      variant="warning"
+      class="alert"
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="countDownChanged"
+    >
+      The code sent to your phone number will expire in {{ dismissCountDown }} seconds...  
+    </b-alert>
+          <a @dismiss-count-down="countDownChanged" v-on:click="newOTP()">Didn't receive a code?</a>
           </b-card-text>
           </b-card>
           </template>
@@ -39,9 +53,9 @@
             <b-input class="input" type="text" v-model="user.registrationID" name="registrationID" placeholder="Registration ID"></b-input>
             <b-input class="input" type="text" v-model="user.facilityName" name="facilityName" placeholder="Facility Name"></b-input>
          <b-input class="input" type="text" v-model="user.facilityAddress" name="facilityAddress" placeholder="Facility Address"></b-input>
-          <b-button class="submit" type="submit">SIGNUP</b-button><br>
+          <b-button class="submit" type="submit" @click="showAlert()">SIGNUP</b-button><br>
           </b-card-text>
-          <router-link to="/"><p>Already have an account? Login</p></router-link>
+          <router-link to="/"><p class="login">Already have an account? Login</p></router-link>
           </b-card>
           </div>
           </form>
@@ -58,6 +72,7 @@
 <script>
 import axios from 'axios'
 import User from '../models/user'
+import swal from 'sweetalert2'
 
 const STORAGE_KEY = 'user-storage'
 export default {
@@ -72,7 +87,10 @@ export default {
       is_admin: null,
       dataFields: ['users'],
       Submitted: false,
-      verified: false
+      verified: false,
+      dismissSecs: 60,
+      dismissCountDown: 0,
+      isLoading: false
     }
   },
   computed: {
@@ -90,11 +108,13 @@ export default {
   },
   methods: {
     register () {
+      this.isLoading = true
       axios({
         method: 'POST',
         url: 'http://35.222.99.37/signup',
         data: this.user
       }).then(response => {
+        this.isLoading = false
         localStorage.setItem('user', JSON.stringify(response.data.user))
         localStorage.setItem('jwt', response.data.token)
         this.userId = response.data.user.id
@@ -102,17 +122,33 @@ export default {
         this.Submitted = true
       }).catch(error => {
         console.log(error)
+        swal.fire({
+          text: error.response.data.message,
+          icon: 'error',
+          showCloseButton: true
+        })
       })
     },
     newOTP () {
       axios.get('http://35.222.99.37/newotp/?id=' + this.userId)
     },
     verify () {
-      axios.get('http://35.222.99.37/verify/?id=' + this.userId + '&code=' + this.userCode).then(function (response) {
-        if (response.status === 200) {
-          this.$router.push({path: '/'})
-        }
-      })
+      axios.get('http://35.222.99.37/verify/?id=' + this.userId + '&code=' + this.userCode)
+        .then(function (response) {
+          swal.fire({
+            text: 'You have successfully registered your account!',
+            icon: 'success',
+            showCloseButton: true
+          }).then(function () {
+            window.location.href = '/'
+          })
+        }).catch((error) => {
+          swal.fire({
+            text: error.response.data.message,
+            icon: 'error',
+            showCloseButton: true
+          })
+        })
     },
     checkStorage (key) {
       if (localStorage.getItem(key)) {
@@ -122,6 +158,12 @@ export default {
           localStorage.removeItem(key)
         }
       }
+    },
+    countDownChanged (dismissCountDown) {
+      this.dismissCountDown = dismissCountDown
+    },
+    showAlert () {
+      this.dismissCountDown = this.dismissSecs
     }
   }
 }
@@ -149,9 +191,10 @@ img{
 }
 #template-2{
   max-width: 30rem;
-  height:40vh;
+  height:25em;
   margin:auto;
   display:flex;
+  margin-top: 15vh;
 }
 p{
   text-align: center;
@@ -160,14 +203,34 @@ p{
   font-size: 16px;
   color: #A9A8A8;
 }
+
+.login{
+  margin-top: -48px;
+  margin-left: -65px;
+  text-align: right;
+}
 p:hover{
   color:#0DDBA9;
 }
 
 a{
-  float:right;
   color: #A9A8A8;
   font-size: 16px;
+  position: absolute;
+  z-index: 1;
+  margin-top: 50px;
+  margin-left: 40%;
+}
+.alert{
+  position: absolute;
+  z-index: 2;
+  margin-top: 45px;
+  font-size: 15px;
+  width: 474px;
+  margin-left: -53px;
+  font-family: 'Roboto', serif;
+  cursor: pointer; 
+  cursor: hand;
 }
 a:hover{
   color:#0DDBA9;
@@ -206,6 +269,19 @@ a:hover{
  .submit:hover{
    background-color: #10BA91;
  }
+ .spinner {
+  position: fixed;
+  z-index: 999;
+  height: 4em;
+  width: 4em;
+  overflow: visible;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  color:#0DDBA9;
+}
 </style>
 
 <!-------- 

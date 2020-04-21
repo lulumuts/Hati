@@ -7,9 +7,9 @@ import Login from '@/components/Login.vue'
 import {store} from '../stores.js'
 import axios from 'axios'
 import User from '@/components/User.vue'
-import LoggedIn from '@/components/LoggedIn.vue'
-import List from '@/components/List.vue'
-import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, NavbarPlugin, FormFilePlugin, EmbedPlugin, PaginationPlugin, SpinnerPlugin } from 'bootstrap-vue'
+import Table from '@/components/Table.vue'
+import Documents from '@/components/Documents.vue'
+import { CardPlugin, LayoutPlugin, FormPlugin, FormInputPlugin, FormGroupPlugin, TablePlugin, ButtonPlugin, NavbarPlugin, FormFilePlugin, EmbedPlugin, PaginationPlugin, SpinnerPlugin, AlertPlugin } from 'bootstrap-vue'
 
 Vue.use(Router)
 Vue.use(CardPlugin)
@@ -21,6 +21,7 @@ Vue.use(TablePlugin)
 Vue.use(LayoutPlugin)
 Vue.use(EmbedPlugin)
 Vue.use(PaginationPlugin)
+Vue.use(AlertPlugin)
 Vue.use(ButtonPlugin)
 Vue.use(FormFilePlugin)
 Vue.use(PaginationPlugin)
@@ -37,8 +38,8 @@ let router = new Router({
     },
     {
       path: '/users',
-      name: 'loggedin',
-      component: LoggedIn
+      name: 'table',
+      component: Table
     },
     {
       path: '/dashboard',
@@ -59,9 +60,9 @@ let router = new Router({
       }
     },
     {
-      path: '/List',
-      name: 'list',
-      component: List,
+      path: '/Documents',
+      name: 'Documents',
+      component: Documents,
       meta: {
         requiresAuth: true,
         guest: true

@@ -1,6 +1,6 @@
 <template>
   <div>
-      <b-navbar>
+      <b-navbar class="nav">
         <b-navbar-brand href="/"><img src="@/assets/Hati-Logo.png"></b-navbar-brand>
           <b-navbar-nav class="ml-auto">
             <b-nav-item href="#">      
@@ -21,17 +21,17 @@
       <router-view></router-view>
     </template>
     <template class="logged" v-else>
-      <register></register>
+      <login></login>
     </template>
   </div>
 </template>
 
 <script>
 import auth from '../auth'
-import register from './Register.vue'
+import login from './Login.vue'
 
 export default {
-  components: { register },
+  components: { login },
   data () {
     return {
       loggedIn: auth.loggedIn(),
@@ -172,9 +172,9 @@ hr{
   font-size: 36px;
   margin-left: 50px;
 }
-
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+@media only screen and (max-width: 600px) {
+  .nav{
+      width:29em;
+  }
 }
 </style>

@@ -3,10 +3,10 @@
         <template v-if="isLoading">
     <b-spinner class="spinner" type="grow"  label="Loading..."></b-spinner>
     </template>
-    <template v-else>
+    <template v-else> 
   <b-row>
   <b-col lg="6" sm="12">
-
+<p></p>
  <b-card
     class="b-card"
     title ="Preview"
@@ -60,7 +60,8 @@ export default {
       previewUrl: '',
       Url: '',
       downloads: 'downloads',
-      isLoading: false
+      isLoading: false,
+      User: ''
     }
   },
   props: ['file', 'ext'],
@@ -148,7 +149,7 @@ export default {
         })
     }
   },
-  mounted () {
+  created: function () {
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
     axios.get('http://35.222.99.37/documents')
       .then(response => {
@@ -172,6 +173,10 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+  },
+  mounted: function () {
+    this.User = JSON.parse(localStorage.getItem('user')).firstName
+    console.log(this.User)
   }
 }
 </script>
@@ -183,7 +188,9 @@ export default {
   text-align: center;
   margin-bottom: 100px;
 }
-
+p{
+  font-size:40px;
+}
 iframe{
  padding:5%;
  border: none;

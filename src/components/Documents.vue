@@ -99,7 +99,7 @@ export default {
 .b-card{
   margin:auto;
   display:flex;
-  /* max-width:90vh; */
+  max-width:90vh;
   border-color: #0DDBA9;
   border-width: 2px;
   font-family: 'Roboto', serif;

@@ -60,7 +60,7 @@ export const store = new Vuex.Store({
     isLoggedIn: state => !!state.token,
     authStatus: state => state.status,
     isAdmin () {
-      let activeUser = JSON.parse(localStorage.getItem('user'))
+      let activeUser = JSON.parse(localStorage.getItem('user')) || 'default'
       return activeUser.userRole === 'admin'
     },
     isUser (state) {

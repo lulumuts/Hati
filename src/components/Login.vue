@@ -60,13 +60,12 @@ export default {
   },
   methods: {
     login () {
-      this.isLoading = true
       this.$validator.validateAll().then(isValid => {
         console.log('state', this.$store.state)
         if (this.user.email && this.user.password) {
+          this.isLoading = true
           this.$store.dispatch('login', this.user)
             .then((response) => {
-              this.loading = false
               const role = response.data.userDetails
               if (role.userRole === 'admin') {
                 this.$router.push('/dashboard')
@@ -84,7 +83,7 @@ export default {
                 icon: 'error',
                 showCloseButton: true
               })
-            })
+            }).finally(() => (this.isLoading = false))
         }
       })
     }
